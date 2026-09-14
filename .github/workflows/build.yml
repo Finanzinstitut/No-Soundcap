@@ -1,0 +1,50 @@
+name: Build
+
+on:
+  push:
+    branches: ['**']
+    tags: ['v*']
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: JDK 25 einrichten
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '25'
+
+      - name: Gradle einrichten
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '9.5.1'
+
+      - name: Bauen
+        run: gradle build --stacktrace --warning-mode all
+
+      - name: JAR hochladen
+        uses: actions/upload-artifact@v4
+        with:
+          name: no-soundcap
+          path: build/libs/*.jar
+          if-no-files-found: error
+
+      - name: Release veroeffentlichen
+        if: startsWith(github.ref, 'refs/tags/v')
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          MC=$(grep '^minecraft_version=' gradle.properties | cut -d= -f2)
+          gh release create "${GITHUB_REF_NAME}" \
+            --repo "${GITHUB_REPOSITORY}" \
+            --title "No Soundcap ${GITHUB_REF_NAME}" \
+            --notes "Fabric-Mod fuer Minecraft ${MC}, Client-only. JAR unten herunterladen und in den mods-Ordner legen." \
+            build/libs/*.jar

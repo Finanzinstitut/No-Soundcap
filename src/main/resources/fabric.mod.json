@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "nosoundcap",
+  "version": "${version}",
+  "name": "No Soundcap",
+  "description": "Hebt Minecrafts Sound-Kanal-Limit (~247 gleichzeitige Sounds) an, damit bei grossen Farmen keine Sounds mehr verschluckt werden.",
+  "authors": ["Finanzinstitut"],
+  "contact": {
+    "sources": "https://github.com/Finanzinstitut/no-soundcap"
+  },
+  "license": "ARR",
+  "environment": "client",
+  "entrypoints": {
+    "client": ["de.finanzinstitut.nosoundcap.NoSoundCap"]
+  },
+  "mixins": [
+    {
+      "config": "nosoundcap.mixins.json",
+      "environment": "client"
+    }
+  ],
+  "depends": {
+    "fabricloader": ">=0.19.3",
+    "minecraft": "~26.2",
+    "java": ">=25"
+  }
+}
