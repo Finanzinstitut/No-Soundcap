@@ -77,10 +77,10 @@ Artefakt `no-soundcap` unter Actions → Run → Artifacts. Kein Wrapper noetig.
 
 ## Release
 
-Ein Tag `v*` loest denselben Workflow aus und haengt die gebauten JARs an ein
-GitHub-Release:
+Zwei Wege, beide ueber denselben Workflow:
 
-```bash
-git tag v1.0.0
-git push origin v1.0.0
-```
+* **Tag pushen** — `git tag v1.0.0 && git push origin v1.0.0`
+* **Manuell** — Actions → Build → *Run workflow*, bei `release_tag` z.B. `v1.0.0`
+  eintragen. Der Tag wird dabei serverseitig auf dem gebauten Commit angelegt.
+
+In beiden Faellen haengt der Workflow die gebauten JARs an ein GitHub-Release.

@@ -6,6 +6,11 @@ on:
     tags: ['v*']
   pull_request:
   workflow_dispatch:
+    inputs:
+      release_tag:
+        description: 'Tag fuer ein Release (z.B. v1.0.0). Leer lassen = nur bauen.'
+        required: false
+        default: ''
 
 permissions:
   contents: write
@@ -38,13 +43,15 @@ jobs:
           if-no-files-found: error
 
       - name: Release veroeffentlichen
-        if: startsWith(github.ref, 'refs/tags/v')
+        if: startsWith(github.ref, 'refs/tags/v') || inputs.release_tag != ''
         env:
           GH_TOKEN: ${{ github.token }}
+          TAG: ${{ inputs.release_tag || github.ref_name }}
         run: |
           MC=$(grep '^minecraft_version=' gradle.properties | cut -d= -f2)
-          gh release create "${GITHUB_REF_NAME}" \
+          gh release create "${TAG}" \
             --repo "${GITHUB_REPOSITORY}" \
-            --title "No Soundcap ${GITHUB_REF_NAME}" \
-            --notes "Fabric-Mod fuer Minecraft ${MC}, Client-only. JAR unten herunterladen und in den mods-Ordner legen." \
+            --target "${GITHUB_SHA}" \
+            --title "No Soundcap ${TAG}" \
+            --notes "Fabric-Mod fuer Minecraft ${MC}, Client-only. JAR herunterladen und in den mods-Ordner legen." \
             build/libs/*.jar
